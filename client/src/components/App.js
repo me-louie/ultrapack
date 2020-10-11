@@ -1,13 +1,35 @@
-import React from 'react';
+import React from "react";
+import MiniDrawer from "./MiniDrawer.js";
+import {
+  ThemeProvider,
+  createMuiTheme,
+  responsiveFontSizes,
+} from "@material-ui/core";
+import { BrowserRouter as Router } from "react-router-dom";
+import "../App.css";
+
+let theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#4bb46e",
+      variant: "#4bb4a3",
+    },
+    secondary: {
+      main: "#b44b91",
+    },
+  },
+});
+
+theme = responsiveFontSizes(theme);
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Learn React now
-        </p>
-      </header>
+      <ThemeProvider theme={theme}>
+        <Router>
+          <MiniDrawer />
+        </Router>
+      </ThemeProvider>
     </div>
   );
 }
