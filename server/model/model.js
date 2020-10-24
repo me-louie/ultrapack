@@ -23,7 +23,7 @@ const UserSchema = new Schema(
   }
 );
 
-const ItemSchema = new ItemSchema(
+const ItemSchema = new Schema(
   {
     owner: { type: String, ref: "User", required: true },
     name: { type: String, required: true },

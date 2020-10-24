@@ -2,44 +2,46 @@ import React from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { lighten, makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import Checkbox from "@material-ui/core/Checkbox";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Toolbar,
+  Typography,
+  Paper,
+  Checkbox,
+  IconButton,
+  Tooltip,
+  FormControlLabel,
+  Switch,
+  TextField,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Button,
+} from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import { useDispatch, useSelector } from "react-redux";
+import { addRow } from "../app/actions/packActions";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+function createData(name, weight, quantity, consumable, category) {
+  return { name, weight, quantity, consumable, category };
 }
 
-const rows = [
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Donut", 452, 25.0, 51, 4.9),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-  createData("Honeycomb", 408, 3.2, 87, 6.5),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Jelly Bean", 375, 0.0, 94, 0.0),
-  createData("KitKat", 518, 26.0, 65, 7.0),
-  createData("Lollipop", 392, 0.2, 98, 0.0),
-  createData("Marshmallow", 318, 0, 81, 2.0),
-  createData("Nougat", 360, 19.0, 9, 37.0),
-  createData("Oreo", 437, 18.0, 63, 4.0),
-];
+// const rows = [
+//   createData("Backpack", 305, 1, false, "Gear"),
+//   createData("Hiking Poles", 100, 1, false, "Gear"),
+//   createData("Trail Mix", 50, 1, true, "Food"),
+//   createData("Thermal", 105, 2, false, "Clothing"),
+//   createData("Water", 500, 1, true, "Food"),
+// ];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -72,12 +74,17 @@ const headCells = [
     id: "name",
     numeric: false,
     disablePadding: true,
-    label: "Dessert (100g serving)",
+    label: "Item",
   },
-  { id: "calories", numeric: true, disablePadding: false, label: "Calories" },
-  { id: "fat", numeric: true, disablePadding: false, label: "Fat (g)" },
-  { id: "carbs", numeric: true, disablePadding: false, label: "Carbs (g)" },
-  { id: "protein", numeric: true, disablePadding: false, label: "Protein (g)" },
+  { id: "weight", numeric: true, disablePadding: false, label: "Weight (g)" },
+  { id: "quantity", numeric: true, disablePadding: false, label: "Quantity" },
+  {
+    id: "consumable",
+    numeric: false,
+    disablePadding: false,
+    label: "Consumable",
+  },
+  { id: "category", numeric: false, disablePadding: false, label: "Category" },
 ];
 
 function EnhancedTableHead(props) {
@@ -102,13 +109,13 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all desserts" }}
+            inputProps={{ "aria-label": "select all items" }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            align={headCell.id === "name" ? "left" : "right"}
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -239,11 +246,14 @@ const useStyles = makeStyles((theme) => ({
 export default function PackingList() {
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
+  const [orderBy, setOrderBy] = React.useState("weight");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [category, setCategory] = React.useState("Other");
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.packingList);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -253,7 +263,7 @@ export default function PackingList() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = data.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -293,10 +303,21 @@ export default function PackingList() {
     setDense(event.target.checked);
   };
 
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  const createNewRow = () => {
+    console.log("create new row");
+    dispatch(addRow());
+  };
+
+  const handleNameChange = (e, id) => {
+    console.log("item id", id)
+  }
   const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
@@ -316,23 +337,23 @@ export default function PackingList() {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={data.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              {stableSort(data, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.name);
+                .map((data, index) => {
+                  const isItemSelected = isSelected(data.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name)}
+                      onClick={(event) => handleClick(event, data.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={data.name}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -347,12 +368,42 @@ export default function PackingList() {
                         scope="row"
                         padding="none"
                       >
-                        {row.name}
+                        <TextField
+                          defaultValue={data.name}
+                          variant="outlined"
+                          size="small"
+                          onChange={(e) => handleNameChange(e.target.value, data.id)}
+                        />
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right">
+                        <TextField
+                          defaultValue={data.weight}
+                          variant="outlined"
+                          size="small"
+                          inputProps={{
+                            style: { textAlign: "right" },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <TextField
+                          defaultValue={data.quantity}
+                          variant="outlined"
+                          size="small"
+                          inputProps={{ style: { textAlign: "right" } }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Switch checked={data.consumable} />
+                      </TableCell>
+                      <TableCell align="right">
+                        <TextField
+                          defaultValue={data.category}
+                          variant="outlined"
+                          size="small"
+                          inputProps={{ style: { textAlign: "right" } }}
+                        />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -364,10 +415,19 @@ export default function PackingList() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            dispatch(addRow());
+          }}
+        >
+          Add a new item
+        </Button>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={data.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
