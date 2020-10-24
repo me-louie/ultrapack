@@ -11,11 +11,11 @@ import "../App.css";
 let theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#4bb46e",
-      variant: "#4bb4a3",
+      main: "#2a403D",
+      variant: "#d05663",
     },
     secondary: {
-      main: "#b44b91",
+      main: "#748b6f",
     },
   },
 });

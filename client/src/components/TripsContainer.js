@@ -1,7 +1,8 @@
 import React from "react";
 import TripCard from "./TripCard";
-import { Typography, Grid, Fab } from "@material-ui/core";
+import { Typography, Grid, Fab, Tooltip } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
+import { Link } from "react-router-dom";
 import "../App.css";
 
 export default class TripContainer extends React.Component {
@@ -15,9 +16,13 @@ export default class TripContainer extends React.Component {
             </Typography>
           </Grid>
           <Grid item>
-            <Fab className="fab" color="secondary" aria-label="add">
-              <AddIcon />
-            </Fab>
+            <Tooltip title="Add">
+              <Link to="/trips/new">
+                <Fab className="fab" color="secondary" aria-label="add">
+                  <AddIcon />
+                </Fab>
+              </Link>
+            </Tooltip>
           </Grid>
         </Grid>
         <Grid container spacing={3}>
