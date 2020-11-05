@@ -20,10 +20,10 @@ import {
   FormControlLabel,
   Switch,
   TextField,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
+  // MenuItem,
+  // FormControl,
+  // InputLabel,
+  // Select,
   Button,
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -31,9 +31,9 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import { useDispatch, useSelector } from "react-redux";
 import { addRow } from "../app/actions/packActions";
 
-function createData(name, weight, quantity, consumable, category) {
-  return { name, weight, quantity, consumable, category };
-}
+// function createData(name, weight, quantity, consumable, category) {
+//   return { name, weight, quantity, consumable, category };
+// }
 
 // const rows = [
 //   createData("Backpack", 305, 1, false, "Gear"),
@@ -251,7 +251,7 @@ export default function PackingList() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [category, setCategory] = React.useState("Other");
+  // const [category, setCategory] = React.useState("Other");
   const dispatch = useDispatch();
   const data = useSelector((state) => state.packingList);
 
@@ -303,15 +303,15 @@ export default function PackingList() {
     setDense(event.target.checked);
   };
 
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
-  };
+  // const handleCategoryChange = (event) => {
+  //   setCategory(event.target.value);
+  // };
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  const createNewRow = () => {
-    console.log("create new row");
-    dispatch(addRow());
-  };
+  // const createNewRow = () => {
+  //   console.log("create new row");
+  //   dispatch(addRow());
+  // };
 
   const handleNameChange = (e, id) => {
     console.log("item id", id)

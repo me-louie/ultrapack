@@ -25,6 +25,7 @@ import ClosetContainer from "./ClosetContainer";
 import PackingContainer from "./PackingContainer";
 import { withRouter } from "react-router";
 import NewTripContainer from "./NewTripContainer.js";
+import LandingPage from "./LandingPage.js";
 
 const drawerWidth = 240;
 
@@ -179,9 +180,10 @@ function MiniDrawer() {
         <div className={classes.toolbar} />
         <Switch>
           <Route exact path="/trips" component={TripsContainer} />
+          <Route exact path="/trips/new" component={NewTripContainer} />
           <Route path="/closet" component={ClosetContainer} />
-          <Route path="/trips/tripname" component={PackingContainer} />
-          <Route path="/trips/new" component={NewTripContainer} />
+          <Route path="/trips/:tripname" component={PackingContainer} />
+          <Route path="/" component={LandingPage} />
         </Switch>
       </main>
     </div>

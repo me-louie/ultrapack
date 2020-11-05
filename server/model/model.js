@@ -7,15 +7,18 @@ const TripSchema = new Schema(
     dateTime: { type: String, required: true },
     trailhead: { type: Object, required: true },
     description: { type: String, required: true },
-    owner: { type: String, ref: "User" },
+    ownerId: { type: String, ref: "User" },
+    packingList: [{ type: Object, ref: "Item" }],
   },
   { timestamps: true }
 );
 
 const UserSchema = new Schema(
   {
-    userId: { type: String, required: true },
-    trips: [{ type: String, ref: "Trip" }],
+    name: { type: String, required: true },
+    email: { type: String, requried: true },
+    password: { type: String },
+    trips: [{ type: Object, ref: "Trip" }],
     closet: [{ type: String, ref: "Item" }],
   },
   {

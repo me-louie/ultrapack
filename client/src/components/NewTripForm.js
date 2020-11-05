@@ -9,8 +9,9 @@ import {
 } from "@material-ui/core";
 import AddressSearchBar from "./AddressSearchBar";
 import { connect } from "react-redux";
-import { setNameDateDescription } from "../app/actions/tripActions";
+import { setNameDateDescription, createTrip } from "../app/actions/tripActions";
 import { trailheadError } from "../app/actions/errorActions";
+import { withRouter } from "react-router";
 // import TripMap from "./experimental/TripMap";
 // import LocationSearchInput from "./experimental/LocationSearchInput";
 
@@ -39,7 +40,6 @@ class NewTripForm extends React.Component {
     nameError: false,
     descriptionError: false,
   };
-
 
   // form handlers
   handleNameChange = (e) => {
@@ -78,11 +78,19 @@ class NewTripForm extends React.Component {
     ) {
       return;
     }
-    this.props.setNameDateDescription({
+
+    this.props.createTrip({
       name: this.state.name,
       dateTime: this.state.dateTime,
       description: this.state.description,
+      trailhead: this.props.trailhead,
     });
+
+    // redirects to newly created trip page
+    const { history } = this.props;
+    if (history) {
+      history.push(`/trips/${this.state.name}`);
+    }
   };
 
   render() {
@@ -197,15 +205,16 @@ class NewTripForm extends React.Component {
   }
 }
 const mapStateToProps = (state) => ({
-  //   name: state.activeTripDetails.name,
-  //   dateTime: state.activeTripDetails.dateTime,
   trailhead: state.activeTripDetails.trailhead,
   trailheadErr: state.errors.trailheadErr,
-  //   description: state.activeTripDetails.description,
 });
 
-const mapDispatchToProps = { setNameDateDescription, trailheadError };
-export default connect(
+const mapDispatchToProps = {
+  setNameDateDescription,
+  trailheadError,
+  createTrip,
+};
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles)(NewTripForm));
+)(withStyles(styles)(NewTripForm)));

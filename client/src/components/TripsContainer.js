@@ -4,8 +4,14 @@ import { Typography, Grid, Fab, Tooltip } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { Link } from "react-router-dom";
 import "../App.css";
+import { getTrips } from "../app/actions/tripActions";
+import { connect } from "react-redux";
 
-export default class TripContainer extends React.Component {
+class TripContainer extends React.Component {
+  componentDidMount() {
+    this.props.getTrips();
+  }
+
   render() {
     return (
       <div>
@@ -26,17 +32,32 @@ export default class TripContainer extends React.Component {
           </Grid>
         </Grid>
         <Grid container spacing={3}>
-          <Grid item xs>
-            <TripCard />
-          </Grid>
-          <Grid item xs>
-            <TripCard />
-          </Grid>
-          <Grid item xs>
-            <TripCard />
-          </Grid>
+          {this.props.trips && this.props.trips.length ? (
+            this.props.trips.map((trip, index) => (
+              <Grid item xs key={index}>
+                <TripCard
+                  name={trip.name}
+                  description={trip.description}
+                  dateTime={trip.dateTime}
+                />
+              </Grid>
+            ))
+          ) : (
+            <Grid item xs>
+              <Typography>No trips yet :( </Typography>{" "}
+            </Grid>
+          )}
         </Grid>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  trips: state.trips,
+});
+
+const mapDispatchToProps = {
+  getTrips,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(TripContainer);
